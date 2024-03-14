@@ -2,7 +2,6 @@ const { Mentor } = require("../models/mentor.model");
 const { Student } = require("../models/student.model");
 const { User } = require("../models/user.model");
 
-
 exports.createStudent = async (req, res) => {
     try {
         const { firstname, lastname, mobileNumber, city, state, address, pincode, rollNo } = req.body;
@@ -19,7 +18,7 @@ exports.createStudent = async (req, res) => {
         await (new Student({
             profile: user._id,
             rollNo,
-        }));
+        })).save();
 
         res.status(200).json({
             message: "Student added"
@@ -48,7 +47,7 @@ exports.createMentor = async (req, res) => {
             profile: user._id,
             faculityRollNo,
             specialization
-        }));
+        })).save();
 
         res.status(200).json({
             message: "Mentor added"
