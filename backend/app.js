@@ -11,4 +11,7 @@ app.get('/', (req, res) => {
     res.json({ message: 'Hello World!' });
 });
 
+app.use("/api/user", require("./src/routes/user.route.js"));
+app.use("/api/score", require("./src/routes/evaluation.route.js"));
+
 module.exports = app;
