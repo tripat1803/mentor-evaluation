@@ -7,9 +7,12 @@ router
     .post(createEvaluation)
     .get(getEvaluation)
     .delete(deleteEvaluation)
-    .put(updateEvaluation);
+    .put(updateEvaluation)
 router
     .route("/lock")
     .post(lockEvaluation);
+router
+    .route("/sendMail")
+    .post(sendMail);
 
 module.exports = router;
