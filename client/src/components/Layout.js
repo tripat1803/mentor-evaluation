@@ -84,7 +84,7 @@ export default function Layout({ children }) {
                     </div>
                 </div>
             </div>
-            <div className='flex-1 relative bg-[#FBFBFB]'>
+            <div className='flex-1 bg-[#FBFBFB] overflow-y-scroll'>
                 <TopNav/>
                 {children}
             </div>

@@ -8,7 +8,8 @@ const studentSchema = mongoose.Schema({
     },
     rollNo: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
     }
 }, {
     timestamps: true

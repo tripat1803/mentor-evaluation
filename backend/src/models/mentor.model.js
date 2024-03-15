@@ -6,11 +6,14 @@ const mentorSchema = mongoose.Schema({
         ref: "users",
         required: true
     },
-    faculityRollNo: {
-        type: String
+    faculityId: {
+        type: String,
+        unique: true,
+        required: true,
     },
     specialization: {
-        type: String
+        type: String,
+        required: true,
     }
 }, {
     timestamps: true
