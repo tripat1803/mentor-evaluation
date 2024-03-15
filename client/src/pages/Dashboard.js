@@ -105,7 +105,8 @@ export default function Dashboard() {
                     {(data.status !== "completed") && <button onClick={() => {
                         setShowData({
                             data: data.scores,
-                            id: data._id
+                            id: data._id,
+                            editable: true
                         })
                         setOpenModal(true);
                     }}><HiPencilAlt size={18} className='text-[blue]'/></button>}
