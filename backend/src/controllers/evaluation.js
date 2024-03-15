@@ -89,13 +89,19 @@ exports.deleteEvaluation = async (req, res) => {
 
 exports.updateEvaluation = async (req, res) => {
     try {
-        let { ideation, execution, pitch, viva } = req.body;
-        let previous = await Evaluation.findOne({ student_id: req.query.id });
+        let { ideation, execution, pitch, viva, evaluationId } = req.body;
+        let previous = await Evaluation.findOne({ _id: evaluationId });
 
-        let scores = new Ideation(ideation ? ideation : previous.scores.ideation, execution ? execution : previous.scores.execution, pitch ? pitch : previous.scores.pitch, viva ? viva : previous.scores.viva);
-
+        if(previous.status === "completed"){
+            return res.status(403).json({
+                message: "Cannot update completed evaluations"
+            })
+        }
+        
+        let scores = new Ideation(ideation ? ideation : previous?.scores?.ideation, execution ? execution : previous?.scores?.execution, pitch ? pitch : previous?.scores?.pitch, viva ? viva : previous?.scores?.viva);
+        
         await Evaluation.updateOne({
-            student_id: req.query.id
+            _id: evaluationId
         }, {
             $set: {
                 scores: scores.getAttributes()
@@ -107,10 +113,45 @@ exports.updateEvaluation = async (req, res) => {
         })
     } catch (err) {
         return res.status(500).json({
+            message: "Server error occured",
+            err
+        })
+    }
+}
+
+exports.lockEvaluation = async (req, res) => {
+    try {
+        let { selectedIds = [] } = req.body;
+
+        await Promise.all(selectedIds.map((id) => {
+            return (async () => {
+                let previous = await Evaluation.findOne({ _id: id });
+
+                if(!previous?.scores?.get("ideation") || previous?.scores?.get("ideation") === 0 || !previous?.scores?.get("execution") || previous?.scores?.get("execution") === 0 || !previous?.scores?.get("pitch") || previous?.scores?.get("pitch") === 0 || !previous?.scores?.get("viva") || previous?.scores?.get("viva") === 0){
+                    throw new Error("Cannot process incomplete evaluations");
+                }
+        
+                await Evaluation.updateOne({
+                    _id: id
+                }, {
+                    $set: {
+                        status: "completed"
+                    }
+                });
+            })();
+        }));
+
+        
+        return res.status(200).json({
+            message: "Status Ok"
+        })
+    } catch(err){
+        return res.status(500).json({
             message: "Server error occured"
         })
     }
 }
+
 exports.sendMail = async (req, res) => {
     let evaluationId = req.query.id;
     const user = await Evaluation.findOne({

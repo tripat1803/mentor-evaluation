@@ -1,5 +1,5 @@
 const express = require("express");
-const { createEvaluation, getEvaluation, deleteEvaluation, updateEvaluation } = require("../controllers/evaluation");
+const { createEvaluation, getEvaluation, deleteEvaluation, updateEvaluation, lockEvaluation } = require("../controllers/evaluation");
 const router = express.Router();
 
 router
@@ -8,5 +8,8 @@ router
         .get(getEvaluation)
         .delete(deleteEvaluation)
         .put(updateEvaluation);
+router
+    .route("/lock")
+        .post(lockEvaluation);
 
 module.exports = router;
