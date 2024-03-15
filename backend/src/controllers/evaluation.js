@@ -3,6 +3,7 @@ const { Evaluation } = require("../models/evaluation.model");
 const { Student } = require("../models/student.model");
 const Ideation = require("../utils/utils");
 const sendVerificationMail = require("../utils/sendVerificationMail");
+const { User } = require("../models/user.model");
 
 exports.createEvaluation = async (req, res) => {
     try {
@@ -75,6 +76,14 @@ exports.getEvaluation = async (req, res) => {
 
 exports.deleteEvaluation = async (req, res) => {
     try {
+        let previous = await Evaluation.findOne({ _id: req.query.id });
+
+        if(previous.status === "completed"){
+            return res.status(403).json({
+                message: "Cannot delete completed evaluations"
+            })
+        }
+
         await Evaluation.deleteOne({ _id: req.query.id });
 
         return res.status(200).json({
@@ -123,6 +132,8 @@ exports.lockEvaluation = async (req, res) => {
     try {
         let { selectedIds = [] } = req.body;
 
+        let evaluations = [];
+
         await Promise.all(selectedIds.map((id) => {
             return (async () => {
                 let previous = await Evaluation.findOne({ _id: id });
@@ -130,6 +141,8 @@ exports.lockEvaluation = async (req, res) => {
                 if(!previous?.scores?.get("ideation") || previous?.scores?.get("ideation") === 0 || !previous?.scores?.get("execution") || previous?.scores?.get("execution") === 0 || !previous?.scores?.get("pitch") || previous?.scores?.get("pitch") === 0 || !previous?.scores?.get("viva") || previous?.scores?.get("viva") === 0){
                     throw new Error("Cannot process incomplete evaluations");
                 }
+
+                evaluations.push(previous.student_id);
         
                 await Evaluation.updateOne({
                     _id: id
@@ -141,6 +154,11 @@ exports.lockEvaluation = async (req, res) => {
             })();
         }));
 
+        let data = await User.find({profileId: {$in: evaluations}});
+
+        data.forEach((item) => {
+            sendVerificationMail(item);
+        })
         
         return res.status(200).json({
             message: "Status Ok"

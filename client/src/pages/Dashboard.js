@@ -9,7 +9,7 @@ import { TiTick } from 'react-icons/ti';
 import { HiPencilAlt } from "react-icons/hi";
 
 export default function Dashboard() {
-    let { data, loader, fetchDashboard } = useContext(DashboardContext);
+    let { filteredData, loader, fetchDashboard, filterData } = useContext(DashboardContext);
     const [deleteLoader, setDeleteLoader] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [showData, setShowData] = useState({
@@ -99,9 +99,9 @@ export default function Dashboard() {
             key: "action",
             default: (data) => {
                 return <div className='flex gap-1.5 items-center'>
-                    <button disabled={deleteLoader} onClick={() => {
+                    {(data.status !== "completed") && <button disabled={deleteLoader} onClick={() => {
                         handleDeleteEvaluation(data._id);
-                    }}><FaTrash size={16} className='text-[red]' /></button>
+                    }}><FaTrash size={16} className='text-[red]' /></button>}
                     {(data.status !== "completed") && <button onClick={() => {
                         setShowData({
                             data: data.scores,
@@ -109,7 +109,7 @@ export default function Dashboard() {
                             editable: true
                         })
                         setOpenModal(true);
-                    }}><HiPencilAlt size={18} className='text-[blue]'/></button>}
+                    }}><HiPencilAlt size={18} className='text-[blue]' /></button>}
                     <button onClick={() => {
                         setShowData({
                             data: data.scores,
@@ -131,8 +131,14 @@ export default function Dashboard() {
                     <button disabled={lockLoader || (selected.length === 0)} onClick={handleLock} className='text-sm px-3 py-1 disabled:bg-[gray] bg-[rgb(30,30,30)] text-white rounded-md'>Submit</button>
                 </div>
                 <div className='flex flex-col gap-2'>
-                    <input type='text' placeholder='Search' className='outline-none rounded-md border px-2 py-1 text-sm border-[rgba(0,0,0,0.1)] w-[35%] placeholder:text-sm' />
-                    <CustomTable columns={columns} data={data} isLoading={loader} />
+                    <select className='w-[200px] border-2 rounded-md p-1 border-[#000]' onChange={(e) => {
+                        filterData(e.target.value);
+                    }}>
+                        <option value="all">All</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                    <CustomTable columns={columns} data={filteredData} isLoading={loader} />
                 </div>
             </div>
             {
