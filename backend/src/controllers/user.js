@@ -36,7 +36,7 @@ exports.createStudent = async (req, res) => {
 
 exports.createMentor = async (req, res) => {
     try {
-        const { firstname, lastname, mobileNumber, city, state, address, pincode, faculityRollNo, specialization } = req.body;
+        const { firstname, lastname, mobileNumber, city, state, address, pincode, faculityId, specialization, email } = req.body;
         let user = await (new User({
             firstname,
             lastname,
@@ -45,12 +45,13 @@ exports.createMentor = async (req, res) => {
             state,
             address,
             pincode,
+            email,
             role: "mentor",
         })).save();
 
         let data = await (new Mentor({
             profile: user._id,
-            faculityRollNo,
+            faculityId,
             specialization
         })).save();
 
@@ -61,7 +62,8 @@ exports.createMentor = async (req, res) => {
         })
     } catch (err) {
         return res.status(500).json({
-            message: "Server error occured"
+            message: "Server error occured",
+            err
         })
     }
 }
