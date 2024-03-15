@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const { Evaluation } = require("../models/evaluation.model");
-const { Student } = require("../models/student.model");
 const Ideation = require("../utils/utils");
 const sendVerificationMail = require("../utils/sendVerificationMail");
 const { User } = require("../models/user.model");
@@ -168,16 +167,4 @@ exports.lockEvaluation = async (req, res) => {
             message: "Server error occured"
         })
     }
-}
-
-exports.sendMail = async (req, res) => {
-    let evaluationId = req.query.id;
-    const user = await Evaluation.findOne({
-        _id: evaluationId
-    })
-    const student = await Student.findOne({
-        _id: user.student_id
-    })
-    sendVerificationMail(student)
-
 }

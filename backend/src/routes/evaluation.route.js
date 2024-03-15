@@ -11,8 +11,5 @@ router
 router
     .route("/lock")
     .post(lockEvaluation);
-router
-    .route("/sendMail")
-    .post(sendMail);
 
 module.exports = router;
