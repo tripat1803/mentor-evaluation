@@ -1,4 +1,4 @@
-const createMailTransporter = require('../config/createMailTransporter');
+const createMailTransporter = require('../../config/createMailTransporter.js');
 
 function sendVerificationMail(user) {
     const transporter = createMailTransporter();
