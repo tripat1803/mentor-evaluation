@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { Evaluation } = require("../models/evaluation.model");
 const Ideation = require("../utils/utils");
+const sendVerificationMail = require("../utils/sendVerificationMail");
 
 exports.createEvaluation = async (req, res) => {
     try {
@@ -90,7 +91,7 @@ exports.updateEvaluation = async (req, res) => {
         let { ideation, execution, pitch, viva } = req.body;
         let previous = await Evaluation.findOne({ student_id: req.query.id });
 
-        let scores = new Ideation(ideation? ideation: previous.scores.ideation, execution? execution: previous.scores.execution, pitch? pitch: previous.scores.pitch, viva? viva: previous.scores.viva);
+        let scores = new Ideation(ideation ? ideation : previous.scores.ideation, execution ? execution : previous.scores.execution, pitch ? pitch : previous.scores.pitch, viva ? viva : previous.scores.viva);
 
         await Evaluation.updateOne({
             student_id: req.query.id
@@ -103,9 +104,17 @@ exports.updateEvaluation = async (req, res) => {
         return res.status(200).json({
             message: "Status Ok"
         })
-    } catch (err){
+    } catch (err) {
         return res.status(500).json({
             message: "Server error occured"
         })
     }
+}
+exports.sendMail = async (req, res) => {
+    let evaluationId = req.query.id;
+    const user = await Evaluation.findOne({
+        _id: evaluationId
+    })
+    sendVerificationMail(user)
+
 }

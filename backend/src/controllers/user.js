@@ -13,18 +13,21 @@ exports.createStudent = async (req, res) => {
             state,
             address,
             pincode,
-            email
+            email,
+            role: "student",
         })).save();
-    
-        await (new Student({
+
+        let data = await (new Student({
             profile: user._id,
             rollNo,
         })).save();
 
+        await User.updateOne({ _id: user._id }, { profileId: data._id });
+
         res.status(200).json({
             message: "Student added"
         })
-    } catch(err) {
+    } catch (err) {
         return res.status(500).json({
             message: "Server error occured"
         })
@@ -41,19 +44,22 @@ exports.createMentor = async (req, res) => {
             city,
             state,
             address,
-            pincode
+            pincode,
+            role: "mentor",
         })).save();
-    
-        await (new Mentor({
+
+        let data = await (new Mentor({
             profile: user._id,
             faculityRollNo,
             specialization
         })).save();
 
+        await User.updateOne({ _id: user._id }, { profileId: data._id });
+
         res.status(200).json({
             message: "Mentor added"
         })
-    } catch(err) {
+    } catch (err) {
         return res.status(500).json({
             message: "Server error occured"
         })
@@ -99,7 +105,7 @@ exports.getStudent = async (req, res) => {
         return res.status(200).json({
             data
         })
-    } catch(err){
+    } catch (err) {
         return res.status(500).json({
             message: "Server error occured",
             err
