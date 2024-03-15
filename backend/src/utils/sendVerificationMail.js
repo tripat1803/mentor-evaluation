@@ -6,7 +6,7 @@ function sendVerificationMail(user) {
         from: 'thetanutaneja@gmail.com',
         to: user.email,
         subject: 'Evaluation Submission Confirmation',
-        html: `<h1>Hello ${user.username}</h1><br>
+        html: `<h1>Hello ${user.firstname}</h1><br>
         <h3>Your evaluation has been submitted successfully.</h3>`
     };
     transporter.sendMail(mailOptions, (err, info) => {
